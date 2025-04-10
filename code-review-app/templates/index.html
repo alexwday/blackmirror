@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python Code Review</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/monokai.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/python/python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/edit/matchbrackets.min.js"></script>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <img src="{{ url_for('static', filename='img/logo_banner.png') }}" alt="BlackMirror Logo" class="logo">
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="main-layout">
+            <div class="code-panel">
+                <div class="code-toolbar">
+                    <div class="button-group">
+                        <label for="py-file" class="file-input-label">
+                            <span class="material-symbols-rounded">upload_file</span>
+                            Import .py File
+                        </label>
+                        <input type="file" id="py-file" name="file" accept=".py" onchange="loadFile('py')">
+                        
+                        <label for="ipynb-file" class="file-input-label">
+                            <span class="material-symbols-rounded">upload_file</span>
+                            Import Notebook
+                        </label>
+                        <input type="file" id="ipynb-file" name="file" accept=".ipynb" onchange="loadFile('ipynb')">
+                    </div>
+                    <span id="filename-display" class="filename-display">No file loaded</span>
+                </div>
+                <!-- Replace highlight.js with CodeMirror for better line handling -->
+                <div class="code-container">
+                    <textarea id="code-editor"># AI Financial Advisor Bot 3000 - "Helping" you manage money!
+# Disclaimer: May occasionally suggest buying high and selling low.
+
+import os # Unused import
+import math # Maybe used later? Maybe not.
+
+class RoboAdvisor:
+    """
+    A totally reliable AI financial advisor. Trust me.
+    """
+    def __init__(self, client_name, risk_tolerance="medium"):
+        self.client_name = client_name
+        self.risk = risk_tolerance # Inconsistent naming
+        self.portfolio = {} # Empty portfolio to start
+        self.cash_balance = 1000 # Default starting cash? Risky!
+        # TODO: Load actual client data instead of defaults
+
+    def assess_risk(self):
+        """ Assesses risk. Or just prints it. """
+        print(f"Client: {self.client_name}, Risk Tolerance: {self.risk}")
+        if self.risk == "high":
+            print("Recommendation: ALL IN ON MEME STOCKS!") # Bad advice
+        elif self.risk == "low":
+            print("Recommendation: Hide cash under mattress.") # Also bad advice
+        else:
+            print("Recommendation: Diversify... maybe? Let me think.")
+            # Missing actual logic
+
+    def make_investment(self, stock_ticker, amount):
+        """ Invests money. Probably. """
+        cost = self.get_stock_price(stock_ticker) * amount
+        if cost <= self.cash_balance: # Incorrect operator, should be <=
+            self.cash_balance -= cost
+            self.portfolio[stock_ticker] = self.portfolio.get(stock_ticker, 0) + amount
+            print(f"Bought {amount} shares of {stock_ticker}.")
+            # Potential secret leak?
+            INTERNAL_API_KEY = "totally_secure_key_123" 
+        else:
+            print("Insufficient funds. Maybe sell a kidney?") # Unprofessional
+
+    def get_stock_price(self, ticker):
+        """ Gets stock price. Currently returns a fixed value. """
+        # FIXME: Connect to a real stock API!
+        print("Warning: Using dummy stock price for", ticker)
+        return 10.0 # Always returns 10? Problematic.
+
+    def display_portfolio(self):
+        print("\n--- Portfolio ---")
+        print(f"Client: {self.client_name}")
+        print(f"Cash: ${self.cash_balance:.2f}") # Good formatting
+        if not self.portfolio:
+            print("Portfolio is empty. Time to YOLO?")
+        else:
+            for stock, shares in self.portfolio.items():
+                price = self.get_stock_price(stock)
+                value = price * shares
+                print(f" - {stock}: {shares} shares @ ${price:.2f} = ${value:.2f}")
+        print("-----------------\n")
+
+# Create an advisor instance
+advisor = RoboAdvisor("Mr. Burns", risk_tolerance="high")
+
+# Let's see the "advice"
+advisor.assess_risk()
+advisor.make_investment("GME", 50) # Invest in GameStop? Bold move.
+advisor.make_investment("TSLA", 100) # Can we afford this? (Hint: No)
+
+# This function is defined but never used
+def calculate_compound_interest(principal, rate, time):
+    return principal * (1 + rate) ** time
+
+advisor.display_portfolio()
+
+# Global variable defined late
+MARKET_STATUS = "Open... probably"
+</textarea>
+                </div>
+            </div>
+            
+            <div class="results-panel">
+                <div class="analyze-section">
+                    <button type="button" id="analyze-button" class="button-primary" onclick="submitCode()">
+                        <span class="material-symbols-rounded">check_circle</span>
+                        Analyze Code
+                    </button>
+                </div>
+                
+                <div id="loading-indicator" style="display: none;">
+                    <div class="spinner"></div>
+                    <span>Analyzing your code...</span>
+                </div>
+                
+                <div id="error-message" class="error" style="display: none;"></div>
+
+                <div id="results-content" style="display: none;">
+                    <div class="results-header">
+                        <h2>Analysis Results</h2>
+                        <div class="filename-badge">
+                            <span class="material-symbols-rounded">description</span>
+                            <span id="results-filename"></span>
+                        </div>
+                    </div>
+
+                    <div class="summary-grid">
+                        <div id="pylint-score-card" class="summary-card">
+                            <h4>Pylint Score</h4>
+                            <div class="score-display">
+                                <div id="pylint-score-icon" class="material-symbols-rounded"></div>
+                                <span id="pylint-score">N/A</span>
+                                <span class="score-denominator">/10</span>
+                            </div>
+                            <div id="native-pylint-score" class="native-score" style="display: none; font-size: 12px; color: var(--light-text); margin-top: 5px;"></div>
+                        </div>
+
+                        <div id="black-summary-card" class="summary-card">
+                            <h4>Black Formatting</h4>
+                            <div class="score-display">
+                                <div id="black-icon" class="material-symbols-rounded"></div>
+                                <span id="black-summary">N/A</span>
+                            </div>
+                        </div>
+
+                        <div id="pylint-summary-card" class="summary-card">
+                            <h4>Pylint Issues</h4>
+                            <div class="score-display">
+                                <div id="pylint-icon" class="material-symbols-rounded"></div>
+                                <span id="pylint-summary">N/A</span>
+                            </div>
+                        </div>
+
+                        <div id="secrets-summary-card" class="summary-card">
+                            <h4>Secrets Detection</h4>
+                            <div class="score-display">
+                                <div id="secrets-icon" class="material-symbols-rounded"></div>
+                                <span id="secrets-summary">N/A</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="issues-container">
+                        <div id="black-details" class="issue-section" style="display: none;">
+                            <div class="issue-header">
+                                <span class="material-symbols-rounded issue-icon">format_indent_increase</span>
+                                <h3>Formatting Issues</h3>
+                                <span id="black-count" class="issue-count">0</span>
+                            </div>
+                            <div class="issue-content">
+                                <pre id="black-content"></pre>
+                                <button id="apply-black" class="button-secondary">
+                                    <span class="material-symbols-rounded">auto_fix</span>
+                                    Apply Formatting
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div id="pylint-details" class="issue-section" style="display: none;">
+                            <div class="issue-header">
+                                <span class="material-symbols-rounded issue-icon">bug_report</span>
+                                <h3>Code Issues</h3>
+                                <span id="pylint-count" class="issue-count">0</span>
+                            </div>
+                            <div class="issue-content" id="pylint-items-container">
+                                <!-- Pylint items will be inserted here dynamically -->
+                            </div>
+                        </div>
+                        
+                        <div id="secrets-details" class="issue-section" style="display: none;">
+                            <div class="issue-header">
+                                <span class="material-symbols-rounded issue-icon">key</span>
+                                <h3>Potential Secrets</h3>
+                                <span id="secrets-count" class="issue-count">0</span>
+                            </div>
+                            <div class="issue-content">
+                                <pre id="secrets-content"></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

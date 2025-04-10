@@ -1,0 +1,5 @@
+flask>=2.0.1
+pylint>=2.12.0
+black>=21.11b1
+detect-secrets>=1.2.0
+nbconvert>=6.3.0
