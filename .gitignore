@@ -1,3 +1,10 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+
 # Python
 __pycache__/
 *.py[cod]
